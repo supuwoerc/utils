@@ -63,9 +63,6 @@ export function ensureSuffix(suffix: string, str: string) {
  * // truncate('hello', 10) -> 'hello'
  */
 export function truncate(str: string, maxLength: number, ellipsis = '...'): string {
-  if (maxLength <= 0) {
-    return ''
-  }
   if (str.length <= maxLength) {
     return str
   }
