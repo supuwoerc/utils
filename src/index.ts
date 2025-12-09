@@ -1,6 +1,7 @@
 export * from './array'
 export * from './is'
 export * from './math'
+export * from './object'
 export * from './promise'
 export * from './string'
 export * from './vendor'

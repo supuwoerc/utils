@@ -1,5 +1,10 @@
 {
   "entryPoints": ["./src/**"],
   "entryPointStrategy": "expand",
-  "out": "docs"
+  "out": "docs",
+  "exclude": [
+    "**/*.test.ts",
+    "**/test/**",
+    "src/vite-env.d.ts"
+  ]
 }
