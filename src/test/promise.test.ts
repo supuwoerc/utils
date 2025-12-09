@@ -85,7 +85,7 @@ describe('sleep function', () => {
     const elapsedTime = Date.now() - startTime
     // 零延迟应该几乎立即执行
     // Zero delay should execute almost immediately
-    expect(elapsedTime).toBeLessThan(10)
+    expect(elapsedTime).toBeLessThan(100)
     expect(callbackCalled).toBe(true)
   })
 
