@@ -1,5 +1,18 @@
 # Changelog
 
+# 0.1.0 (2025-12-10)
+
+
+### Features
+
+* add comprehensive utility library with tree operations and helper functions 78700a5
+* add promise utilities and comprehensive test suite 0a55487
+* **object:** add utility functions with comprehensive tests 0e49270
+
+
+### Reverts
+
+* Revert "chore(release): v0.1.1" 268ff8f
 
 ## ...main
 
@@ -42,4 +55,3 @@
 
 - Supuwoerc <zhangzhouou@gmail.com>
 - Idris ([@supuwoerc](https://github.com/supuwoerc))
-
