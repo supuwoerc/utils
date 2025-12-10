@@ -137,7 +137,7 @@ pnpm run lint
 
 ### Release
 
-Releases are automated via [changelogen](https://github.com/unjs/changelogen). To create a new release:
+Releases are automated via [release-it](https://github.com/release-it/release-it). To create a new release:
 
 ```bash
 pnpm run release

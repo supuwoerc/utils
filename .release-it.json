@@ -3,14 +3,14 @@
     "release": true
   },
   "git": {
-    "commitMessage": "release: v${version}",
+    "commitMessage": "chore: v${version}",
     "tagName": "v${version}"
   },
   "npm": {
     "publish": false
   },
   "hooks": {
-    "after:bump": "echo update version success!!!"
+    "after:bump": "echo release success!!!"
   },
   "plugins": {
     "release-it-pnpm": {},

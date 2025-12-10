@@ -137,7 +137,7 @@ pnpm run lint
 
 ### 发布
 
-发布通过 [changelogen](https://github.com/unjs/changelogen) 自动化。要创建新版本：
+发布通过 [release-it](https://github.com/release-it/release-it) 自动化。要创建新版本：
 
 ```bash
 pnpm run release
