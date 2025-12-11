@@ -2,7 +2,9 @@ import type { Tree, TreeNode } from '@/array'
 import { describe, expect, it, vi } from 'vitest'
 import {
   array2Tree,
+  filterTree,
   getParents,
+  getSubtreeByDepth,
   getTargetFromTree,
   sampleWithoutReplacement,
   sampleWithReplacement,
@@ -373,6 +375,301 @@ describe('tree2Array', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0]).toEqual({ id: 1, name: 'Single Node' })
+  })
+})
+
+describe('filterTree', () => {
+  // 测试数据
+  const tree: Tree<TreeNode>[] = [
+    {
+      id: 1,
+      title: 'Parent',
+      children: [
+        {
+          id: 2,
+          title: 'Child 1',
+          children: [
+            { id: 3, title: 'Grandchild 1' },
+            { id: 4, title: 'Grandchild 2' },
+          ],
+        },
+        {
+          id: 5,
+          title: 'Child 2',
+          children: [{ id: 6, title: 'Grandchild 3' }],
+        },
+      ],
+    },
+    {
+      id: 7,
+      title: 'Another Root',
+      children: [],
+    },
+  ]
+
+  it('should filter nodes matching predicate', () => {
+    const result = filterTree(tree, (node) => node.title.includes('Child'))
+    // 预期保留包含 'Child' 的节点及其父节点和子节点
+    expect(result).toHaveLength(1) // 根节点 'Parent' 被保留，因为其子节点匹配
+    expect(result[0].id).toBe(1)
+    expect(result[0].children).toHaveLength(2) // 两个子节点都保留
+    expect(result[0].children?.[0]?.id).toBe(2)
+    expect(result[0].children?.[1]?.id).toBe(5)
+  })
+
+  it('should prune branches with no matches', () => {
+    const result = filterTree(tree, (node) => node.title.includes('Grandchild'))
+    // 只有包含 'Grandchild' 的节点及其祖先被保留
+    expect(result).toHaveLength(1)
+    expect(result[0].id).toBe(1)
+    expect(result[0].children).toHaveLength(2) // Child 1 和 Child 2 都有 Grandchild
+    // 检查子节点是否被修剪（它们本身不匹配，但子节点匹配）
+    expect(result[0].children?.[0]?.children).toHaveLength(2)
+    expect(result[0].children?.[1]?.children).toHaveLength(1)
+  })
+
+  it('should return empty array if no matches', () => {
+    const result = filterTree(tree, (node) => node.title.includes('Nonexistent'))
+    expect(result).toEqual([])
+  })
+
+  it('should handle empty tree', () => {
+    const result = filterTree([] as any, (node) => node.title.includes('anything'))
+    expect(result).toEqual([])
+  })
+
+  it('should work with custom children key', () => {
+    const customTree = [
+      {
+        id: 1,
+        title: 'Parent',
+        subs: [{ id: 2, title: 'Child' }],
+      },
+    ]
+    const result = filterTree(customTree, (node) => node.title.includes('Child'), 'subs')
+    expect(result).toHaveLength(1)
+    expect(result[0].id).toBe(1)
+    expect(result[0].subs).toHaveLength(1)
+  })
+})
+
+describe('getSubtreeByDepth', () => {
+  // Test data structure
+  // 测试数据结构
+  const mockTree = [
+    {
+      id: 1,
+      name: 'Node 1',
+      children: [
+        {
+          id: 2,
+          name: 'Node 1-1',
+          children: [
+            { id: 3, name: 'Node 1-1-1', children: [] },
+            { id: 4, name: 'Node 1-1-2', children: [] },
+          ],
+        },
+        { id: 5, name: 'Node 1-2', children: [] },
+      ],
+    },
+    {
+      id: 6,
+      name: 'Node 2',
+      children: [{ id: 7, name: 'Node 2-1', children: [] }],
+    },
+  ]
+
+  // Test case 1: Get subtree with depth 0 (only root nodes)
+  // 测试用例1：获取深度为0的子树（仅根节点）
+  it('should return only root nodes when maxDepth is 0', () => {
+    const result = getSubtreeByDepth(mockTree, 0)
+
+    expect(result).toEqual([
+      {
+        id: 1,
+        name: 'Node 1',
+        children: [], // Children should be empty array at depth 0
+        // 深度为0时子节点应为空数组
+      },
+      {
+        id: 6,
+        name: 'Node 2',
+        children: [],
+      },
+    ])
+  })
+
+  // Test case 2: Get subtree with depth 1 (root nodes and their direct children)
+  // 测试用例2：获取深度为1的子树（根节点及其直接子节点）
+  it('should return nodes up to depth 1', () => {
+    const result = getSubtreeByDepth(mockTree, 1)
+
+    expect(result).toEqual([
+      {
+        id: 1,
+        name: 'Node 1',
+        children: [
+          {
+            id: 2,
+            name: 'Node 1-1',
+            children: [], // Children should be empty at depth 1
+            // 深度为1时子节点应为空
+          },
+          {
+            id: 5,
+            name: 'Node 1-2',
+            children: [],
+          },
+        ],
+      },
+      {
+        id: 6,
+        name: 'Node 2',
+        children: [
+          {
+            id: 7,
+            name: 'Node 2-1',
+            children: [],
+          },
+        ],
+      },
+    ])
+  })
+
+  // Test case 3: Get subtree with depth 2 (full tree in this case)
+  // 测试用例3：获取深度为2的子树（本例中的完整树）
+  it('should return full tree when maxDepth is 2', () => {
+    const result = getSubtreeByDepth(mockTree, 2)
+
+    expect(result).toEqual(mockTree)
+  })
+
+  // Test case 4: Get subtree with depth greater than tree depth
+  // 测试用例4：获取深度大于树深度的子树
+  it('should return full tree when maxDepth exceeds tree depth', () => {
+    const result = getSubtreeByDepth(mockTree, 5)
+
+    expect(result).toEqual(mockTree)
+  })
+
+  // Test case 5: Tree with custom children key
+  // 测试用例5：使用自定义子节点键的树
+  it('should work with custom children key', () => {
+    const customTree = [
+      {
+        id: 1,
+        name: 'Node 1',
+        subNodes: [
+          {
+            id: 2,
+            name: 'Node 1-1',
+            subNodes: [],
+          },
+        ],
+      },
+    ]
+
+    const result = getSubtreeByDepth(customTree, 1, 'subNodes')
+
+    expect(result).toEqual([
+      {
+        id: 1,
+        name: 'Node 1',
+        subNodes: [
+          {
+            id: 2,
+            name: 'Node 1-1',
+            subNodes: [],
+          },
+        ],
+      },
+    ])
+  })
+
+  // Test case 6: Empty tree
+  // 测试用例6：空树
+  it('should return empty array for empty tree', () => {
+    const result = getSubtreeByDepth([], 2)
+
+    expect(result).toEqual([])
+  })
+
+  // Test case 7: Tree with null/undefined children
+  // 测试用例7：包含null/undefined子节点的树
+  it('should handle nodes with null or undefined children', () => {
+    const treeWithNullChildren = [
+      {
+        id: 1,
+        name: 'Node 1',
+        children: null,
+      },
+      {
+        id: 2,
+        name: 'Node 2',
+        children: undefined,
+      },
+      {
+        id: 3,
+        name: 'Node 3',
+        // No children property
+        // 没有children属性
+      },
+    ]
+
+    const result = getSubtreeByDepth(treeWithNullChildren, 2)
+
+    expect(result).toEqual(treeWithNullChildren)
+  })
+
+  // Test case 8: Verify original tree is not mutated
+  // 测试用例8：验证原始树未被修改
+  it('should not mutate the original tree', () => {
+    const originalTree = JSON.parse(JSON.stringify(mockTree))
+    getSubtreeByDepth(mockTree, 1)
+
+    expect(mockTree).toEqual(originalTree)
+  })
+
+  // Test case 9: Tree with mixed node types
+  // 测试用例9：包含混合节点类型的树
+  it('should handle tree with additional properties', () => {
+    const complexTree = [
+      {
+        id: 1,
+        name: 'Node 1',
+        value: 100,
+        enabled: true,
+        children: [
+          {
+            id: 2,
+            name: 'Node 1-1',
+            value: 50,
+            enabled: false,
+            children: [],
+          },
+        ],
+      },
+    ]
+
+    const result = getSubtreeByDepth(complexTree, 1)
+
+    expect(result).toEqual([
+      {
+        id: 1,
+        name: 'Node 1',
+        value: 100,
+        enabled: true,
+        children: [
+          {
+            id: 2,
+            name: 'Node 1-1',
+            value: 50,
+            enabled: false,
+            children: [],
+          },
+        ],
+      },
+    ])
   })
 })
 

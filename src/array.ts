@@ -105,6 +105,100 @@ export function tree2Array<T = TreeNode>(
 }
 
 /**
+ * 根据匹配函数过滤树节点，并修剪不匹配的分支
+ * Filter tree nodes by match function and prune unmatched branches
+ *
+ * @template T - 节点类型 / node type
+ * @template K - children 字段名，默认为 'children' / children key name, default 'children'
+ * @param {Tree<T, K>[]} tree - 树数组 / tree array
+ * @param {(node: T) => boolean} match - 匹配函数，返回 true 表示保留节点 / match function, returns true to keep node
+ * @param {K} [childrenKey='children' as K] - 子节点字段名 / children field name
+ * @returns {Tree<T, K>[]} 过滤后的树数组 / filtered tree array
+ *
+ * @example
+ * // 根据标题搜索
+ * // Search by title
+ * const result = filterTree(tree, (node) => node.title.includes('query'))
+ */
+export function filterTree<T = TreeNode, K extends string = 'children'>(
+  tree: Tree<T, K>[],
+  match: (node: T) => boolean,
+  childrenKey: K = 'children' as K,
+): Tree<T, K>[] {
+  const filterAndPrune = (node: Tree<T, K>): Tree<T, K> | null => {
+    const children = node[childrenKey] as Tree<T, K>[] | undefined
+    let filteredChildren: Tree<T, K>[] = []
+    if (children && Array.isArray(children)) {
+      filteredChildren = children.map(filterAndPrune).filter((n): n is Tree<T, K> => n !== null)
+    }
+    if (match(node)) {
+      return { ...node, [childrenKey]: filteredChildren }
+    }
+    if (filteredChildren.length > 0) {
+      return { ...node, [childrenKey]: filteredChildren }
+    }
+    return null
+  }
+  const prunedTree = tree.map(filterAndPrune).filter((n): n is Tree<T, K> => n !== null)
+  return prunedTree
+}
+
+/**
+ * 根据最大深度获取子树 / Get subtree by maximum depth
+ *
+ * 该函数递归遍历树形结构，返回一个不超过指定深度的新树。 / This function recursively traverses a tree structure and returns a new tree with depth not exceeding the specified maximum.
+ *
+ * @template T - 树节点的类型，必须是一个对象 / The type of tree node, must be an object
+ * @param {T[]} tree - 树形结构的数组 / Array of tree structure
+ * @param {number} maxDepth - 最大深度（从0开始计数） / Maximum depth (counting from 0)
+ * @param {string} [childrenKey='children'] - 子节点属性名 / Children property name
+ * @param {number} [currentDepth=0] - 当前深度（内部递归使用） / Current depth (used internally for recursion)
+ * @returns {T[]} - 处理后的子树数组 / Processed subtree array
+ *
+ * @example
+ * // 示例树结构 / Example tree structure
+ * const tree = [
+ *   {
+ *     id: 1,
+ *     children: [
+ *       { id: 2, children: [{ id: 3 }] }
+ *     ]
+ *   }
+ * ];
+ *
+ * // 获取深度为1的子树 / Get subtree with depth 1
+ * const result = getSubtreeByDepth(tree, 1);
+ * // 结果: [{ id: 1, children: [{ id: 2 }] }]
+ */
+export function getSubtreeByDepth<T extends Record<string, any>, K extends string = 'children'>(
+  tree: T[],
+  maxDepth: number,
+  childrenKey: K = 'children' as K,
+  currentDepth: number = 0,
+): T[] {
+  if (currentDepth > maxDepth) {
+    return []
+  }
+  return tree.map((node) => {
+    const children = node[childrenKey] as T[] | undefined
+    if (currentDepth === maxDepth) {
+      return {
+        ...node,
+        [childrenKey]: [],
+      }
+    }
+    if (children && children.length > 0) {
+      const processedChildren = getSubtreeByDepth(children, maxDepth, childrenKey, currentDepth + 1)
+      return {
+        ...node,
+        [childrenKey]: processedChildren,
+      }
+    }
+    return node
+  })
+}
+
+/**
  * 获取目标节点所有父节点（从根到目标的路径）
  *
  * Get all parent nodes of a target (path from root to target).
