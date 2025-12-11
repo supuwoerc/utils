@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.0.0](/compare/v1.0.0-beta.1...v1.0.0) (2025-12-11)
+
+
+### Features
+
+* **array:** add tree filtering and depth-based subtree extraction functions 8a3fa63
+
 # [1.0.0](/compare/v1.0.0-beta.1...v1.0.0) (2025-12-10)
 
 # 0.1.0 (2025-12-10)
