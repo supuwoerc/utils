@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import Queue from '@/queue'
+import { Queue } from '@/queue'
 
 describe('queue', () => {
   // 测试队列初始化 — Test queue initialization

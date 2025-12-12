@@ -26,34 +26,8 @@ class Node {
  * 基于单向链表的队列实现，支持先进先出（FIFO）操作。
  * Queue implementation based on singly linked list, supporting first-in-first-out (FIFO) operations.
  *
- * 特性 / Features:
- * - O(1) 时间复杂度的入队和出队操作 / O(1) enqueue and dequeue operations
- * - 可迭代，支持 for...of 循环 / Iterable, supports for...of loops
- * - 支持清空队列 / Supports clearing the queue
- * - 支持获取队列大小 / Supports getting queue size
- * - 支持查看队首元素而不移除 / Supports peeking at the front element without removal
- * - 支持通过 drain 生成器逐步出队 / Supports gradual dequeue via drain generator
- *
- * @example
- * // 创建队列 / Create a queue
- * const queue = new Queue()
- *
- * // 入队 / Enqueue
- * queue.push('first')
- * queue.push('second')
- *
- * // 查看队首 / Peek front
- * console.log(queue.get()) // 'first'
- *
- * // 出队 / Dequeue
- * console.log(queue.shift()) // 'first'
- *
- * // 迭代 / Iterate
- * for (const item of queue) {
- *   console.log(item) // 'second'
- * }
  */
-export default class Queue {
+export class Queue {
   #head?: Node
   #tail?: Node
   #size: number = 0
