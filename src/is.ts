@@ -136,3 +136,23 @@ export const isNumber = (val: any): val is number => typeof val === 'number'
  */
 // eslint-disable-next-line ts/no-unsafe-function-type
 export const isFunction = <T extends Function>(val: any): val is T => typeof val === 'function'
+
+/**
+ * 检查一个值是否为整数
+ * Checks if a value is an integer
+ *
+ * @param {any} val - 要检查的值 / The value to check
+ * @returns {boolean} 如果是整数返回 true，否则返回 false / Returns true if the value is an integer, otherwise false
+ *
+ * @example
+ * isInteger(42) // true
+ * isInteger(42.5) // false
+ * isInteger('42') // false
+ * isInteger(Infinity) // false
+ */
+export function isInteger(val: any): boolean {
+  if (typeof val !== 'number' || !Number.isFinite(val)) {
+    return false
+  }
+  return Number.isInteger(val)
+}

@@ -1,4 +1,5 @@
 export * from './array'
+export * from './cache'
 export * from './is'
 export * from './math'
 export * from './object'
