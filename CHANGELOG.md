@@ -1,5 +1,17 @@
 # Changelog
 
+# [1.0.0](/compare/v1.0.0-beta.3...v1.0.0) (2025-12-12)
+
+
+### Bug Fixes
+
+* correct Queue class export b3bce5f
+
+
+### Features
+
+* remove lodash-es types dependency and add new utility exports 20ccbe7
+
 # [1.0.0](/compare/v1.0.0-beta.2...v1.0.0) (2025-12-12)
 
 
