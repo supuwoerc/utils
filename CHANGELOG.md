@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.0.0](/compare/v1.0.0-beta.2...v1.0.0) (2025-12-12)
+
+
+### Features
+
+* add Queue data structure implementation b859ec6
+
 # [1.0.0](/compare/v1.0.0-beta.1...v1.0.0) (2025-12-11)
 
 
