@@ -12,7 +12,7 @@
 
 # @supuwoerc/utils
 
-A collection of utility functions for JavaScript/TypeScript, including array, object, string, math, and promise helpers.
+A collection of utility functions for JavaScript/TypeScript.
 
 ## Features
 
