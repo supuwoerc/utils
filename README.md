@@ -16,14 +16,7 @@ A collection of utility functions for JavaScript/TypeScript, including array, ob
 
 ## Features
 
-- **Tree operations**: Convert between array and tree structures, find parents, etc.
-- **Array utilities**: Shuffle, sample, unique by custom equality, etc.
-- **Object utilities**: Pick, omit, isEmpty, etc.
-- **String utilities**: Ensure prefix/suffix, truncate, get unit, etc.
-- **Math utilities**: Normalize, map range, etc.
-- **Promise utilities**: Sleep, timeout, retry, promisify, allSettled with results, etc.
 - **TypeScript support**: Fully typed with generics.
-- **Zero dependencies** (except for a few peer dependencies like `fast-deep-equal` and `throttle-debounce`).
 - **Tested**: Comprehensive test suite with Vitest.
 - **Documented**: Auto-generated API documentation via TypeDoc.
 

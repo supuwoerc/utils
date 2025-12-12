@@ -12,6 +12,7 @@ export default antfu(
       'curly': ['error', 'all'],
       'antfu/consistent-list-newline': 'off',
       'jsdoc/no-defaults': 'off',
+      '@stylistic/generator-star-spacing': 'off',
     },
   },
   {
