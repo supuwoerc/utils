@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.0.0](/compare/v1.0.0-beta.4...v1.0.0) (2025-12-13)
+
+
+### Features
+
+* add LRUCacheWithTTL class and refactor cache module 4401998
+
 # [1.0.0](/compare/v1.0.0-beta.3...v1.0.0) (2025-12-12)
 
 
