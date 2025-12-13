@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.0.0](/compare/v1.0.0-beta.6...v1.0.0) (2025-12-13)
+
+
+### Bug Fixes
+
+* **promise:** use platform-agnostic type for timeout ID 6f18ba8
+
 # [1.0.0](/compare/v1.0.0-beta.5...v1.0.0) (2025-12-13)
 
 # [1.0.0](/compare/v1.0.0-beta.4...v1.0.0) (2025-12-13)
