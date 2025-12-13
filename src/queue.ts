@@ -1,24 +1,4 @@
-/**
- * 队列节点类 — Queue node class
- *
- * 表示队列中的一个节点，包含值和指向下一个节点的引用。
- * Represents a node in the queue, containing a value and a reference to the next node.
- */
-class Node {
-  value: any
-  next?: Node
-
-  /**
-   * 创建队列节点 — Create a queue node
-   *
-   * @param {any} value - 节点存储的值 / value stored in the node
-   * @param {Node} [next] - 下一个节点的引用（可选）/ reference to the next node (optional)
-   */
-  constructor(value: any, next?: Node) {
-    this.value = value
-    this.next = next
-  }
-}
+import { LinkedList } from '@/linked-list'
 
 /**
  * 队列数据结构 — Queue data structure
@@ -27,20 +7,8 @@ class Node {
  * Queue implementation based on singly linked list, supporting first-in-first-out (FIFO) operations.
  *
  */
-export class Queue {
-  #head?: Node
-  #tail?: Node
-  #size: number = 0
-
-  /**
-   * 创建队列实例 — Create a queue instance
-   *
-   * 初始化一个空队列。
-   * Initializes an empty queue.
-   */
-  constructor() {
-    this.clear()
-  }
+export class Queue<T> {
+  #linkedList = new LinkedList<T>()
 
   /**
    * 获取队列当前大小 — Get current queue size
@@ -48,7 +16,7 @@ export class Queue {
    * @returns {number} 队列中元素的数量 / number of elements in the queue
    */
   get size() {
-    return this.#size
+    return this.#linkedList.size
   }
 
   /**
@@ -58,9 +26,8 @@ export class Queue {
    * Removes all elements from the queue, resetting it to empty state.
    */
   clear() {
-    this.#head = undefined
-    this.#tail = undefined
-    this.#size = 0
+    this.#linkedList.clear()
+    return this
   }
 
   /**
@@ -72,15 +39,8 @@ export class Queue {
    * @param {any} value - 要添加到队列的值 / value to add to the queue
    */
   enqueue(value: any) {
-    const node = new Node(value)
-    if (this.size > 0) {
-      this.#tail!.next = node
-      this.#tail = node
-    } else {
-      this.#head = node
-      this.#tail = node
-    }
-    this.#size++
+    this.#linkedList.push(value)
+    return this
   }
 
   /**
@@ -92,16 +52,7 @@ export class Queue {
    * @returns {any | undefined} 队列的第一个元素，如果队列为空则返回 undefined / the first element of the queue, or undefined if the queue is empty
    */
   dequeue(): any | undefined {
-    const current = this.#head
-    if (!current) {
-      return undefined
-    }
-    this.#head = this.#head?.next
-    this.#size--
-    if (!this.#head) {
-      this.#tail = undefined
-    }
-    return current.value
+    return this.#linkedList.shift()
   }
 
   /**
@@ -122,21 +73,8 @@ export class Queue {
    * console.log(queue.dequeue()) // 1
    */
   reverse() {
-    if (this.#size <= 1) {
-      return
-    }
-    let prev: Node | undefined
-    let current: Node | undefined = this.#head
-    let next: Node | undefined
-    while (current) {
-      next = current.next
-      current.next = prev
-      prev = current
-      current = next
-    }
-    const oldHead = this.#head
-    this.#head = this.#tail
-    this.#tail = oldHead
+    this.#linkedList.reverse()
+    return this
   }
 
   /**
@@ -148,7 +86,7 @@ export class Queue {
    * @returns {any | undefined} 队列的第一个元素，如果队列为空则返回 undefined / the first element of the queue, or undefined if the queue is empty
    */
   peek(): any | undefined {
-    return this.#head?.value
+    return this.#linkedList.front()
   }
 
   /**
@@ -167,8 +105,8 @@ export class Queue {
    * // 循环结束后队列为空 / Queue is empty after the loop
    */
   *drain() {
-    while (this.#head) {
-      yield this.dequeue()
+    while (!this.#linkedList.isEmpty) {
+      yield this.#linkedList.shift()
     }
   }
 
@@ -181,10 +119,8 @@ export class Queue {
    * @yields {any} 队列中的每个元素（按入队顺序）/ each element in the queue (in enqueue order)
    */
   *[Symbol.iterator]() {
-    let current = this.#head
-    while (current) {
-      yield current.value
-      current = current.next
+    for (const item of this.#linkedList) {
+      yield item
     }
   }
 }

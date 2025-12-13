@@ -1,6 +1,7 @@
 export * from './array'
 export * from './cache'
 export * from './is'
+export * from './linked-list'
 export * from './math'
 export * from './object'
 export * from './promise'

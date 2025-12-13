@@ -257,6 +257,233 @@ describe('queue', () => {
     })
   })
 
+  // 测试链式调用 — Test method chaining
+  describe('method chaining', () => {
+    it('should support chaining enqueue operations', () => {
+      const queue = new Queue<number>()
+      const result = queue.enqueue(1).enqueue(2).enqueue(3)
+      expect(result).toBe(queue)
+      expect(queue.size).toBe(3)
+      expect([...queue]).toEqual([1, 2, 3])
+    })
+
+    it('should support chaining clear and enqueue', () => {
+      const queue = new Queue<string>()
+      const afterQueue = queue.enqueue('a').enqueue('b')
+      expect(queue.size).toBe(2)
+      expect(queue).toEqual(afterQueue)
+
+      const clearedQueue = queue.clear()
+      expect(clearedQueue).toBe(queue)
+      expect(queue.size).toBe(0)
+
+      queue.enqueue('c').enqueue('d')
+      expect(queue.size).toBe(2)
+      expect([...queue]).toEqual(['c', 'd'])
+    })
+
+    it('should support chaining with reverse', () => {
+      const queue = new Queue<number>()
+
+      queue.enqueue(1).enqueue(2).enqueue(3).reverse()
+
+      expect(queue.size).toBe(3)
+      expect([...queue]).toEqual([3, 2, 1])
+
+      const reversedQueue = queue.reverse()
+      expect(reversedQueue).toBe(queue)
+      expect([...queue]).toEqual([1, 2, 3])
+    })
+
+    it('should support complex chaining scenarios', () => {
+      const queue = new Queue<string>()
+
+      queue
+        .enqueue('first') // first
+        .enqueue('second') // first second
+        .enqueue('third') // first second third
+        .reverse() // third second first
+        .enqueue('fourth') // third second first fourth
+        .reverse() // fourth first second third
+
+      expect(queue.size).toBe(4)
+      expect([...queue]).toEqual(['fourth', 'first', 'second', 'third'])
+
+      expect(queue.dequeue()).toBe('fourth')
+      expect(queue.dequeue()).toBe('first')
+      expect(queue.dequeue()).toBe('second')
+      expect(queue.dequeue()).toBe('third')
+    })
+
+    it('should maintain chainability after drain', () => {
+      const queue = new Queue<number>()
+
+      queue.enqueue(1).enqueue(2)
+
+      const drained = []
+      for (const item of queue.drain()) {
+        drained.push(item)
+      }
+      expect(drained).toEqual([1, 2])
+      expect(queue.size).toBe(0)
+
+      queue.enqueue(3).enqueue(4).enqueue(5)
+      expect(queue.size).toBe(3)
+      expect([...queue]).toEqual([3, 4, 5])
+    })
+
+    it('should support chaining with mixed operations', () => {
+      const queue = new Queue<number>()
+
+      queue
+        .enqueue(1)
+        .enqueue(2)
+        .enqueue(3)
+        .reverse() // [3, 2, 1]
+        .enqueue(4) // [3, 2, 1, 4]
+        .enqueue(5) // [3, 2, 1, 4, 5]
+        .reverse() // [5, 4, 1, 2, 3]
+
+      expect(queue.size).toBe(5)
+      expect([...queue]).toEqual([5, 4, 1, 2, 3])
+
+      // 验证出队顺序
+      // Verify dequeue order
+      expect(queue.dequeue()).toBe(5)
+      expect(queue.dequeue()).toBe(4)
+      expect(queue.dequeue()).toBe(1)
+      expect(queue.dequeue()).toBe(2)
+      expect(queue.dequeue()).toBe(3)
+    })
+
+    it('should support chaining in performance-critical scenarios', () => {
+      const queue = new Queue<number>()
+      const iterations = 1000
+
+      for (let i = 0; i < iterations; i++) {
+        queue.enqueue(i)
+      }
+
+      queue.reverse()
+
+      expect(queue.size).toBe(iterations)
+
+      for (let i = iterations - 1; i >= 0; i--) {
+        expect(queue.dequeue()).toBe(i)
+      }
+
+      expect(queue.size).toBe(0)
+    })
+
+    it('should support chaining with different data types', () => {
+      const queue = new Queue<any>()
+
+      queue.enqueue(1).enqueue('string').enqueue({ key: 'value' }).enqueue([1, 2, 3]).reverse()
+
+      expect(queue.size).toBe(4)
+      expect([...queue]).toEqual([[1, 2, 3], { key: 'value' }, 'string', 1])
+
+      queue.clear().enqueue('new').enqueue('chain')
+      expect(queue.size).toBe(2)
+      expect([...queue]).toEqual(['new', 'chain'])
+    })
+
+    it('should support chaining after partial operations', () => {
+      const queue = new Queue<number>()
+
+      // 部分操作后继续链式调用
+      // Continue chaining after partial operations
+      queue.enqueue(1).enqueue(2)
+
+      // 执行一些非链式操作
+      // Perform some non-chaining operations
+      const first = queue.dequeue()
+      expect(first).toBe(1)
+      expect(queue.size).toBe(1)
+
+      // 继续链式调用
+      // Continue chaining
+      queue.enqueue(3).enqueue(4).reverse()
+
+      expect(queue.size).toBe(3)
+      expect([...queue]).toEqual([4, 3, 2])
+    })
+
+    it('should ensure all chainable methods return this', () => {
+      const queue = new Queue<number>()
+
+      // 验证所有可链式调用的方法都返回 this
+      // Verify all chainable methods return this
+      const enqueueResult = queue.enqueue(1)
+      expect(enqueueResult).toBe(queue)
+
+      const reverseResult = queue.reverse()
+      expect(reverseResult).toBe(queue)
+
+      const clearResult = queue.clear()
+      expect(clearResult).toBe(queue)
+
+      // 空队列的 reverse 也应返回 this
+      // reverse on empty queue should also return this
+      const emptyReverseResult = queue.reverse()
+      expect(emptyReverseResult).toBe(queue)
+    })
+  })
+
+  // 测试链式调用与迭代器的结合 — Test chaining with iterators
+  describe('chaining with iterators', () => {
+    it('should work with iterator after chaining', () => {
+      const queue = new Queue<number>()
+
+      queue.enqueue(1).enqueue(2).enqueue(3).reverse()
+
+      // 使用迭代器验证链式调用的结果
+      // Use iterator to verify chaining result
+      const iterator = queue[Symbol.iterator]()
+      expect(iterator.next().value).toBe(3)
+      expect(iterator.next().value).toBe(2)
+      expect(iterator.next().value).toBe(1)
+      expect(iterator.next().done).toBe(true)
+    })
+
+    it('should work with spread operator after chaining', () => {
+      const queue = new Queue<string>()
+
+      queue.enqueue('a').enqueue('b').enqueue('c').reverse()
+
+      // 使用扩展运算符验证链式调用的结果
+      // Use spread operator to verify chaining result
+      const array = [...queue]
+      expect(array).toEqual(['c', 'b', 'a'])
+
+      // 继续链式调用并验证
+      // Continue chaining and verify
+      queue.enqueue('d').reverse()
+      expect([...queue]).toEqual(['d', 'a', 'b', 'c'])
+    })
+
+    it('should work with drain after chaining', () => {
+      const queue = new Queue<number>()
+
+      queue.enqueue(1).enqueue(2).reverse().enqueue(3)
+
+      // 使用 drain 排空链式调用后的队列
+      // Use drain to empty queue after chaining
+      const drained = []
+      for (const item of queue.drain()) {
+        drained.push(item)
+      }
+
+      expect(drained).toEqual([2, 1, 3])
+      expect(queue.size).toBe(0)
+
+      // 排空后继续链式调用
+      // Continue chaining after drain
+      queue.enqueue(4).enqueue(5)
+      expect([...queue]).toEqual([4, 5])
+    })
+  })
+
   // 测试 drain 生成器 — Test drain generator
   describe('drain', () => {
     it('should yield all elements in FIFO order', () => {
