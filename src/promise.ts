@@ -57,7 +57,7 @@ export function withTimeout<T>(
   timeoutMs: number,
   errorMessage: string | Error = 'Operation timeout',
 ): Promise<T> {
-  let timeoutId: NodeJS.Timeout
+  let timeoutId: ReturnType<typeof globalThis.setTimeout>
   const timeoutPromise = new Promise<never>((_, reject) => {
     timeoutId = setTimeout(() => {
       reject(typeof errorMessage === 'string' ? new Error(errorMessage) : errorMessage)
