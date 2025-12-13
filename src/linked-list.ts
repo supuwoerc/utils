@@ -282,7 +282,6 @@ export class LinkedList<T> {
    * 清空链表并依次产出所有节点值
    * Empties the linked list and yields all node values in sequence
    *
-   * @generator
    * @yields {T} 链表节点的值 - The value of the linked list node
    * @example
    * // 清空链表并处理所有值
