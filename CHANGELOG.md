@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.0.0](/compare/v1.0.0-beta.7...v1.0.0) (2025-12-14)
+
+
+### Features
+
+* export doubly-linked-list and improve type safety b902b62
+
 # [1.0.0](/compare/v1.0.0-beta.6...v1.0.0) (2025-12-13)
 
 
