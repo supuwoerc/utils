@@ -106,7 +106,7 @@ export class Queue<T> {
    */
   *drain() {
     while (!this.#linkedList.isEmpty) {
-      yield this.#linkedList.shift()
+      yield this.#linkedList.shift() as T
     }
   }
 

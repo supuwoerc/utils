@@ -211,9 +211,9 @@ export class LinkedList<T> {
       return true
     }
     const node = new LinkedListNode(value)
-    const pre = this.#getNode(index - 1)!
-    node.next = pre!.next
-    pre!.next = node
+    const prev = this.#getNode(index - 1)!
+    node.next = prev!.next
+    prev!.next = node
     this.#size++
     return true
   }
@@ -235,9 +235,9 @@ export class LinkedList<T> {
       this.pop()
       return true
     }
-    const pre = this.#getNode(index - 1)
-    const removeTarget = pre!.next!
-    pre!.next = removeTarget.next
+    const prev = this.#getNode(index - 1)
+    const removeTarget = prev!.next!
+    prev!.next = removeTarget.next
     removeTarget.next = undefined // remove reference
     this.#size--
     return true
@@ -292,7 +292,7 @@ export class LinkedList<T> {
    */
   *drain() {
     while (this.#head) {
-      yield this.shift()
+      yield this.shift() as T
     }
   }
 }

@@ -204,7 +204,7 @@ describe('linked-list', () => {
 
       const drainedValues: number[] = []
       for (const value of list.drain()) {
-        drainedValues.push(value!)
+        drainedValues.push(value)
       }
 
       expect(drainedValues).toEqual([1, 2, 3])
@@ -215,7 +215,7 @@ describe('linked-list', () => {
     it('drain should not yield any values on empty list', () => {
       const drainedValues: number[] = []
       for (const value of list.drain()) {
-        drainedValues.push(value!)
+        drainedValues.push(value)
       }
 
       expect(drainedValues).toEqual([])
