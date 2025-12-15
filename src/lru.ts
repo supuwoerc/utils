@@ -21,7 +21,21 @@ export class CacheError extends Error {
   }
 }
 
+/**
+ * LRU缓存节点类，继承自双向链表节点
+ * LRU Cache Node class, extends DoublyLinkedListNode
+ *
+ * @template K - 键的类型，必须是对象键类型（string | number | symbol）
+ *          Type of key, must be object key type (string | number | symbol)
+ * @template V - 值的类型
+ *          Type of value
+ * @extends DoublyLinkedListNode<V>
+ */
 export class LRUCacheNode<K extends keyof any, V> extends DoublyLinkedListNode<V> {
+  /**
+   * 缓存节点的键，用于在哈希表中快速查找
+   * Key of the cache node, used for quick lookup in hash table
+   */
   key: K
 
   constructor(key: K, value: V) {

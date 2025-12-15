@@ -44,8 +44,26 @@ export class DoublyLinkedListNode<V> {
  *
  */
 export class DoublyLinkedList<V> {
+  /**
+   * 头节点（可选）
+   * Head node (optional)
+   * @type {DoublyLinkedListNode<V> | undefined}
+   */
   #head?: DoublyLinkedListNode<V>
+
+  /**
+   * 尾节点（可选）
+   * Tail node (optional)
+   * @type {DoublyLinkedListNode<V> | undefined}
+   */
   #tail?: DoublyLinkedListNode<V>
+
+  /**
+   * 链表当前大小（节点数量）
+   * Current size of the linked list (number of nodes)
+   * @type {number}
+   * @default 0
+   */
   #size: number = 0
 
   /**
