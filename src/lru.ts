@@ -1,4 +1,5 @@
-import { isInteger } from './is'
+import { DoublyLinkedList, DoublyLinkedListNode } from '@/doubly-linked-list'
+import { isInteger } from '@/is'
 
 /**
  * 自定义缓存错误类
@@ -31,16 +32,10 @@ export class CacheError extends Error {
  * When the cache reaches its capacity limit, it automatically removes
  * the least recently accessed item.
  */
-export class LRUCache<K, V> {
-  /**
-   * 私有 Map 对象，用于存储键值对
-   * Private Map object for storing key-value pairs
-   *
-   * Map 能够记住键的原始插入顺序，这对于实现 LRU 算法很重要
-   * Map can remember the original insertion order of keys,
-   * which is important for implementing LRU algorithm
-   */
-  #cache = new Map<K, V>()
+export class LRUCache<K extends keyof any, V> {
+  #cache = {} as Record<K, DoublyLinkedListNode<V, K>>
+
+  #doublyLinkedList = new DoublyLinkedList<V, K>()
 
   /**
    * 私有属性，缓存的最大容量
@@ -82,7 +77,7 @@ export class LRUCache<K, V> {
    *          Returns true if key exists, false otherwise
    */
   has(key: K) {
-    return this.#cache.has(key)
+    return Object.hasOwn(this.#cache, key)
   }
 
   /**
@@ -108,12 +103,21 @@ export class LRUCache<K, V> {
    */
   set(key: K, value: V) {
     if (this.has(key)) {
-      this.#cache.delete(key)
+      this.#cache[key].value = value
+      this.#doublyLinkedList.removeNode(this.#cache[key])
+      this.#doublyLinkedList.addToHead(this.#cache[key])
+    } else {
+      const node = new DoublyLinkedListNode(value, key)
+      this.#cache[key] = node
+      this.#doublyLinkedList.addToHead(node)
+      if (this.#doublyLinkedList.size > this.#capacity) {
+        const tail = this.#doublyLinkedList.removeTail()
+        if (tail && tail.key) {
+          delete this.#cache[tail.key]
+        }
+      }
     }
-    this.#cache.set(key, value)
-    if (this.#cache.size > this.#capacity) {
-      this.#cache.delete(this.#cache.keys().next().value!)
-    }
+    return this
   }
 
   /**
@@ -132,10 +136,10 @@ export class LRUCache<K, V> {
    */
   get(key: K): V | undefined {
     if (this.has(key)) {
-      const res = this.#cache.get(key)
-      this.#cache.delete(key)
-      this.#cache.set(key, res!)
-      return res
+      const node = this.#cache[key]
+      this.#doublyLinkedList.removeNode(node)
+      this.#doublyLinkedList.addToHead(node)
+      return node.value
     }
     return undefined
   }
@@ -148,7 +152,7 @@ export class LRUCache<K, V> {
    *          Number of items currently stored in the cache
    */
   get size(): number {
-    return this.#cache.size
+    return this.#doublyLinkedList.size
   }
 
   /**
@@ -167,7 +171,8 @@ export class LRUCache<K, V> {
    * Clear all items from the cache
    */
   clear(): void {
-    this.#cache.clear()
+    this.#cache = {} as Record<K, DoublyLinkedListNode<V>>
+    this.#doublyLinkedList.clear()
   }
 
   /**
@@ -181,7 +186,12 @@ export class LRUCache<K, V> {
    *          Returns true if key existed and was deleted, false otherwise
    */
   delete(key: K): boolean {
-    return this.#cache.delete(key)
+    if (this.has(key)) {
+      const node = this.#cache[key]
+      delete this.#cache[key]
+      return this.#doublyLinkedList.removeNode(node)
+    }
+    return false
   }
 }
 
@@ -245,9 +255,10 @@ export class ValueWithTTL<T> {
  * @template K - The type of keys in the cache. 缓存键的类型。
  * @template V - The type of values in the cache. 缓存值的类型。
  */
-export class LRUCacheWithTTL<K, V> {
-  /** Internal cache storage using Map. 使用Map的内部缓存存储。 */
-  #cache = new Map<K, ValueWithTTL<V>>()
+export class LRUCacheWithTTL<K extends keyof any, V> {
+  #cache = {} as Record<K, DoublyLinkedListNode<ValueWithTTL<V>, K>>
+
+  #doublyLinkedList = new DoublyLinkedList<ValueWithTTL<V>, K>()
 
   /** Maximum number of items the cache can hold. 缓存可容纳的最大项目数。 */
   #capacity = 0
@@ -292,10 +303,11 @@ export class LRUCacheWithTTL<K, V> {
    *                    如果键存在且未过期则返回true，否则返回false。
    */
   has(key: K) {
-    if (this.#cache.has(key)) {
-      const val = this.#cache.get(key)!
-      if (val.isExpired()) {
-        this.#cache.delete(key)
+    if (Object.hasOwn(this.#cache, key)) {
+      const node = this.#cache[key]
+      if (node.value.isExpired()) {
+        delete this.#cache[key]
+        this.#doublyLinkedList.removeNode(node)
         return false
       }
       return true
@@ -312,12 +324,21 @@ export class LRUCacheWithTTL<K, V> {
    */
   set(key: K, value: V) {
     if (this.has(key)) {
-      this.#cache.delete(key)
+      this.#cache[key].value = new ValueWithTTL(value, this.#ttl)
+      this.#doublyLinkedList.removeNode(this.#cache[key])
+      this.#doublyLinkedList.addToHead(this.#cache[key])
+    } else {
+      const node = new DoublyLinkedListNode(new ValueWithTTL(value, this.#ttl), key)
+      this.#cache[key] = node
+      this.#doublyLinkedList.addToHead(node)
+      if (this.#doublyLinkedList.size > this.#capacity) {
+        const tail = this.#doublyLinkedList.removeTail()
+        if (tail && tail.key) {
+          delete this.#cache[tail.key]
+        }
+      }
     }
-    this.#cache.set(key, new ValueWithTTL(value, this.#ttl))
-    if (this.#cache.size > this.#capacity) {
-      this.#cache.delete(this.#cache.keys().next().value!)
-    }
+    return this
   }
 
   /**
@@ -330,11 +351,11 @@ export class LRUCacheWithTTL<K, V> {
    */
   get(key: K): V | undefined {
     if (this.has(key)) {
-      const res = this.#cache.get(key)!
-      this.#cache.delete(key)
-      res.resetTTL()
-      this.#cache.set(key, res)
-      return res?.value
+      const node = this.#cache[key]
+      node.value.resetTTL()
+      this.#doublyLinkedList.removeNode(node)
+      this.#doublyLinkedList.addToHead(node)
+      return node.value.value
     }
     return undefined
   }
@@ -347,9 +368,10 @@ export class LRUCacheWithTTL<K, V> {
    */
   cleanupExpired(): number {
     let deletedCount = 0
-    for (const [k, v] of this.#cache) {
-      if (v.isExpired()) {
-        this.#cache.delete(k)
+    for (const k in this.#cache) {
+      if (this.#cache[k].value.isExpired()) {
+        this.#doublyLinkedList.removeNode(this.#cache[k])
+        delete this.#cache[k]
         deletedCount++
       }
     }
@@ -363,7 +385,7 @@ export class LRUCacheWithTTL<K, V> {
    * @returns {number} The number of items in the cache. 缓存中的项目数量。
    */
   get size(): number {
-    return this.#cache.size
+    return this.#doublyLinkedList.size
   }
 
   /**
@@ -381,7 +403,8 @@ export class LRUCacheWithTTL<K, V> {
    * 清除缓存中的所有项目。
    */
   clear(): void {
-    this.#cache.clear()
+    this.#cache = {} as Record<K, DoublyLinkedListNode<ValueWithTTL<V>, K>>
+    this.#doublyLinkedList.clear()
   }
 
   /**
@@ -393,6 +416,11 @@ export class LRUCacheWithTTL<K, V> {
    *                    如果键被删除则返回true，如果键不存在则返回false。
    */
   delete(key: K): boolean {
-    return this.#cache.delete(key)
+    if (this.has(key)) {
+      const node = this.#cache[key]
+      delete this.#cache[key]
+      return this.#doublyLinkedList.removeNode(node)
+    }
+    return false
   }
 }

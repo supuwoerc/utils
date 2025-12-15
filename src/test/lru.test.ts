@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { CacheError, LRUCache, LRUCacheWithTTL, ValueWithTTL } from '@/cache'
+import { CacheError, LRUCache, LRUCacheWithTTL, ValueWithTTL } from '@/lru'
 
 describe('lru cache', () => {
   describe('constructor', () => {
@@ -61,20 +61,14 @@ describe('lru cache', () => {
 
     it('should support various types of keys and values', () => {
       const cache = new LRUCache(5)
-      const objKey = { id: 1 }
-      const funcKey = () => {}
       const symKey = Symbol('test')
 
       cache.set('string', 'value')
       cache.set(123, 456)
-      cache.set(objKey, 'object value')
-      cache.set(funcKey, 'function value')
       cache.set(symKey, 'symbol value')
 
       expect(cache.get('string')).toBe('value')
       expect(cache.get(123)).toBe(456)
-      expect(cache.get(objKey)).toBe('object value')
-      expect(cache.get(funcKey)).toBe('function value')
       expect(cache.get(symKey)).toBe('symbol value')
     })
   })
