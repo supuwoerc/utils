@@ -21,6 +21,15 @@ export class CacheError extends Error {
   }
 }
 
+export class LRUCacheNode<K extends keyof any, V> extends DoublyLinkedListNode<V> {
+  key: K
+
+  constructor(key: K, value: V) {
+    super(value)
+    this.key = key
+  }
+}
+
 /**
  * LRU (Least Recently Used) 缓存类
  * LRU (Least Recently Used) Cache Class
@@ -33,9 +42,21 @@ export class CacheError extends Error {
  * the least recently accessed item.
  */
 export class LRUCache<K extends keyof any, V> {
-  #cache = {} as Record<K, DoublyLinkedListNode<V, K>>
+  /**
+   * 缓存映射表，用于快速通过键查找对应的双向链表节点
+   * Cache map for quick lookup of doubly linked list nodes by key
+   * @type {Record<K, DoublyLinkedListNode<V, K>>}
+   * @private
+   */
+  #cache = {} as Record<K, LRUCacheNode<K, V>>
 
-  #doublyLinkedList = new DoublyLinkedList<V, K>()
+  /**
+   * 双向链表实例，用于维护缓存项的访问顺序
+   * Doubly linked list instance for maintaining access order of cache items
+   * @type {DoublyLinkedList<V, K>}
+   * @private
+   */
+  #doublyLinkedList = new DoublyLinkedList<V>()
 
   /**
    * 私有属性，缓存的最大容量
@@ -107,11 +128,11 @@ export class LRUCache<K extends keyof any, V> {
       this.#doublyLinkedList.removeNode(this.#cache[key])
       this.#doublyLinkedList.addToHead(this.#cache[key])
     } else {
-      const node = new DoublyLinkedListNode(value, key)
+      const node = new LRUCacheNode(key, value)
       this.#cache[key] = node
       this.#doublyLinkedList.addToHead(node)
       if (this.#doublyLinkedList.size > this.#capacity) {
-        const tail = this.#doublyLinkedList.removeTail()
+        const tail = this.#doublyLinkedList.removeTail() as LRUCacheNode<K, V>
         if (tail && tail.key) {
           delete this.#cache[tail.key]
         }
@@ -171,7 +192,7 @@ export class LRUCache<K extends keyof any, V> {
    * Clear all items from the cache
    */
   clear(): void {
-    this.#cache = {} as Record<K, DoublyLinkedListNode<V>>
+    this.#cache = {} as Record<K, LRUCacheNode<K, V>>
     this.#doublyLinkedList.clear()
   }
 
@@ -256,9 +277,20 @@ export class ValueWithTTL<T> {
  * @template V - The type of values in the cache. 缓存值的类型。
  */
 export class LRUCacheWithTTL<K extends keyof any, V> {
-  #cache = {} as Record<K, DoublyLinkedListNode<ValueWithTTL<V>, K>>
-
-  #doublyLinkedList = new DoublyLinkedList<ValueWithTTL<V>, K>()
+  /**
+   * 缓存映射表，用于快速通过键查找对应的双向链表节点
+   * Cache map for quick lookup of doubly linked list nodes by key
+   * @type {Record<K, LRUCacheNode<K, ValueWithTTL<V>>>}
+   * @private
+   */
+  #cache = {} as Record<K, LRUCacheNode<K, ValueWithTTL<V>>>
+  /**
+   * 双向链表实例，用于维护缓存项的访问顺序
+   * Doubly linked list instance for maintaining access order of cache items
+   * @type {DoublyLinkedList<ValueWithTTL<V>>}
+   * @private
+   */
+  #doublyLinkedList = new DoublyLinkedList<ValueWithTTL<V>>()
 
   /** Maximum number of items the cache can hold. 缓存可容纳的最大项目数。 */
   #capacity = 0
@@ -328,11 +360,11 @@ export class LRUCacheWithTTL<K extends keyof any, V> {
       this.#doublyLinkedList.removeNode(this.#cache[key])
       this.#doublyLinkedList.addToHead(this.#cache[key])
     } else {
-      const node = new DoublyLinkedListNode(new ValueWithTTL(value, this.#ttl), key)
+      const node = new LRUCacheNode(key, new ValueWithTTL(value, this.#ttl))
       this.#cache[key] = node
       this.#doublyLinkedList.addToHead(node)
       if (this.#doublyLinkedList.size > this.#capacity) {
-        const tail = this.#doublyLinkedList.removeTail()
+        const tail = this.#doublyLinkedList.removeTail() as LRUCacheNode<K, ValueWithTTL<V>>
         if (tail && tail.key) {
           delete this.#cache[tail.key]
         }
@@ -403,7 +435,7 @@ export class LRUCacheWithTTL<K extends keyof any, V> {
    * 清除缓存中的所有项目。
    */
   clear(): void {
-    this.#cache = {} as Record<K, DoublyLinkedListNode<ValueWithTTL<V>, K>>
+    this.#cache = {} as Record<K, LRUCacheNode<K, ValueWithTTL<V>>>
     this.#doublyLinkedList.clear()
   }
 

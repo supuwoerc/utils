@@ -4,25 +4,19 @@
  *
  * @template V - The type of value stored in the node
  *            - 节点存储的值的类型
- * @template K - The type of key (optional, defaults to never)
- *            - 键的类型（可选，默认为never）
  */
-export class DoublyLinkedListNode<V, K = never> {
-  /** Optional uniq key associated with the node */
-  /** 节点关联的可选键 - 需要唯一 */
-  key?: K
-
+export class DoublyLinkedListNode<V> {
   /** Value stored in the node */
   /** 节点存储的值 */
   value: V
 
   /** Reference to the previous node in the list */
   /** 指向链表中前一个节点的引用 */
-  prev?: DoublyLinkedListNode<V, K>
+  prev?: DoublyLinkedListNode<V>
 
   /** Reference to the next node in the list */
   /** 指向链表中后一个节点的引用 */
-  next?: DoublyLinkedListNode<V, K>
+  next?: DoublyLinkedListNode<V>
 
   /**
    * Creates a new doubly linked list node
@@ -30,20 +24,12 @@ export class DoublyLinkedListNode<V, K = never> {
    *
    * @param value - The value to store in the node
    *              - 要存储在节点中的值
-   * @param key - Optional key associated with the node
-   *            - 与节点关联的可选键
    * @param prev - Optional reference to the previous node
    *             - 指向前一个节点的可选引用
    * @param next - Optional reference to the next node
    *             - 指向后一个节点的可选引用
    */
-  constructor(
-    value: V,
-    key?: K,
-    prev?: DoublyLinkedListNode<V, K>,
-    next?: DoublyLinkedListNode<V, K>,
-  ) {
-    this.key = key
+  constructor(value: V, prev?: DoublyLinkedListNode<V>, next?: DoublyLinkedListNode<V>) {
     this.value = value
     this.prev = prev
     this.next = next
@@ -55,13 +41,11 @@ export class DoublyLinkedListNode<V, K = never> {
  * Doubly Linked List Implementation
  *
  * @template V 链表元素类型 / Type of list elements
- * @template K - The type of element key (optional, defaults to never)
- *            - 元素键的类型（可选，默认为never）
  *
  */
-export class DoublyLinkedList<V, K = never> {
-  #head?: DoublyLinkedListNode<V, K>
-  #tail?: DoublyLinkedListNode<V, K>
+export class DoublyLinkedList<V> {
+  #head?: DoublyLinkedListNode<V>
+  #tail?: DoublyLinkedListNode<V>
   #size: number = 0
 
   /**
@@ -90,7 +74,7 @@ export class DoublyLinkedList<V, K = never> {
    * @param index 要获取的节点索引 / Index of the node to get
    * @returns 找到的节点或 undefined / Found node or undefined
    */
-  #getNode(index: number): DoublyLinkedListNode<V, K> | undefined {
+  #getNode(index: number): DoublyLinkedListNode<V> | undefined {
     if (index < 0 || index >= this.#size) {
       return undefined
     }
@@ -148,14 +132,13 @@ export class DoublyLinkedList<V, K = never> {
    * Add element at the end of the list
    *
    * @param value 要添加的值 / Value to add
-   * @param key 可选的键值，用于某些特定场景 / Optional key value for specific scenarios
    * @returns 链表自身（支持链式调用） / The list itself (supports method chaining)
    *
    * @example
    * list.push(1).push(2).push(3)
    */
-  push(value: V, key?: K): this {
-    const node = new DoublyLinkedListNode(value, key)
+  push(value: V): this {
+    const node = new DoublyLinkedListNode(value)
     if (this.isEmpty) {
       this.#head = node
       this.#tail = node
@@ -175,10 +158,10 @@ export class DoublyLinkedList<V, K = never> {
    * 移除并返回双向链表的尾节点。
    * 如果链表为空，返回 undefined。
    *
-   * @returns {DoublyLinkedListNode<V, K> | undefined} The removed tail node, or undefined if the list is empty.
+   * @returns {DoublyLinkedListNode<V> | undefined} The removed tail node, or undefined if the list is empty.
    * 被移除的尾节点，如果链表为空则返回 undefined。
    */
-  removeTail(): DoublyLinkedListNode<V, K> | undefined {
+  removeTail(): DoublyLinkedListNode<V> | undefined {
     if (this.isEmpty) {
       return undefined
     }
@@ -212,13 +195,13 @@ export class DoublyLinkedList<V, K = never> {
    *
    * 将节点添加到双向链表的头部（开头）。
    *
-   * @param {DoublyLinkedListNode<V, K>} node - The node to add to the head of the list.
+   * @param {DoublyLinkedListNode<V>} node - The node to add to the head of the list.
    * 要添加到链表头部的节点。
    *
-   * @returns {DoublyLinkedList<V, K>} The current list instance for method chaining.
+   * @returns {DoublyLinkedList<V>} The current list instance for method chaining.
    * 当前链表实例，支持方法链式调用。
    */
-  addToHead(node: DoublyLinkedListNode<V, K>) {
+  addToHead(node: DoublyLinkedListNode<V>) {
     if (this.isEmpty) {
       this.#head = node
       this.#tail = node
@@ -236,14 +219,13 @@ export class DoublyLinkedList<V, K = never> {
    * Add element at the beginning of the list
    *
    * @param value 要添加的值 / Value to add
-   * @param key 可选的键值，用于某些特定场景 / Optional key value for specific scenarios
    * @returns 链表自身（支持链式调用） / The list itself (supports method chaining)
    *
    * @example
    * list.unshift(1).unshift(2).unshift(3)
    */
-  unshift(value: V, key?: K) {
-    return this.addToHead(new DoublyLinkedListNode(value, key))
+  unshift(value: V) {
+    return this.addToHead(new DoublyLinkedListNode(value))
   }
 
   /**
@@ -303,26 +285,25 @@ export class DoublyLinkedList<V, K = never> {
    *
    * @param index 要插入的索引位置 / Index position to insert at
    * @param value 要插入的值 / Value to insert
-   * @param key 可选的键值，用于某些特定场景 / Optional key value for specific scenarios
    * @returns 如果插入成功返回 true，否则返回 false / Returns true if successful, false otherwise
    *
    * @remarks
    * 支持在头部、尾部和中间位置插入
    * Supports insertion at head, tail, and middle positions
    */
-  insert(index: number, value: V, key?: K): boolean {
+  insert(index: number, value: V): boolean {
     if (index < 0 || index > this.#size) {
       return false
     }
     if (index === this.#size) {
-      this.push(value, key)
+      this.push(value)
       return true
     }
     if (index === 0) {
-      this.unshift(value, key)
+      this.unshift(value)
       return true
     }
-    const node = new DoublyLinkedListNode(value, key)
+    const node = new DoublyLinkedListNode(value)
     const prev = this.#getNode(index - 1)!
     node.next = prev!.next
     node.prev = prev
@@ -339,7 +320,7 @@ export class DoublyLinkedList<V, K = never> {
    * @param node 要从链表中移除的节点 / The node to remove from the list
    * @returns 如果节点被找到并移除返回 true，否则返回 false / True if the node was found and removed, false otherwise
    */
-  removeNode(node: DoublyLinkedListNode<V, K>): boolean {
+  removeNode(node: DoublyLinkedListNode<V>): boolean {
     if (!node || this.isEmpty) {
       return false
     }
@@ -410,9 +391,9 @@ export class DoublyLinkedList<V, K = never> {
     if (this.#size <= 1) {
       return this
     }
-    let prev: DoublyLinkedListNode<V, K> | undefined
-    let current: DoublyLinkedListNode<V, K> | undefined = this.#head
-    let next: DoublyLinkedListNode<V, K> | undefined
+    let prev: DoublyLinkedListNode<V> | undefined
+    let current: DoublyLinkedListNode<V> | undefined = this.#head
+    let next: DoublyLinkedListNode<V> | undefined
     while (current) {
       next = current.next
       current.next = prev
