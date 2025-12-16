@@ -1,5 +1,5 @@
 {
-  "name": "@supuwoerc/utils",
+  "name": "@supuwoerc/toolkit",
   "type": "module",
   "version": "1.0.0",
   "description": "a collection of utility functions for JavaScript/TypeScript",
@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/supuwoerc/utils"
+    "url": "git+https://github.com/supuwoerc/toolkit"
   },
   "keywords": [
-    "utils"
+    "toolkit"
   ],
   "exports": {
     ".": {
