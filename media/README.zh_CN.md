@@ -1,16 +1,16 @@
 <p align="center">
-  <a href="https://supuwoerc.github.io/utils/"><img src="./utils.png" width='360' style='border-radius:20px;'></a>
+  <a href="https://supuwoerc.github.io/toolkit/"><img src="./utils.png" width='360' style='border-radius:20px;'></a>
   <br/>
   <br/>
   <a href="./README.md"><img alt="README in English" src="https://img.shields.io/badge/English-d9d9d9"></a>
   <a href="./README.zh_CN.md"><img alt="简体中文文档" src="https://img.shields.io/badge/简体中文-d9d9d9"></a>
-  <img src="https://github.com/supuwoerc/utils/actions/workflows/tests.yml/badge.svg">
+  <img src="https://github.com/supuwoerc/toolkit/actions/workflows/tests.yml/badge.svg">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg">
-  <img src="https://img.shields.io/npm/v/@supuwoerc/utils">
+  <img src="https://img.shields.io/npm/v/@supuwoerc/toolkit">
   <img src="https://img.shields.io/badge/docs-github_pages-blue">
 </p>
 
-# @supuwoerc/utils
+# @supuwoerc/toolkit
 
 一个 JavaScript/TypeScript 实用函数集合。
 
@@ -23,19 +23,19 @@
 ## 安装
 
 ```bash
-npm install @supuwoerc/utils
+npm install @supuwoerc/toolkit
 ```
 
 或使用 pnpm：
 
 ```bash
-pnpm add @supuwoerc/utils
+pnpm add @supuwoerc/toolkit
 ```
 
 或使用 yarn：
 
 ```bash
-yarn add @supuwoerc/utils
+yarn add @supuwoerc/toolkit
 ```
 
 ## 使用
@@ -43,7 +43,7 @@ yarn add @supuwoerc/utils
 ### ES 模块 / TypeScript
 
 ```ts
-import { array2Tree, pick, shuffle, sleep, tree2Array, withTimeout } from '@supuwoerc/utils'
+import { array2Tree, pick, shuffle, sleep, tree2Array, withTimeout } from '@supuwoerc/toolkit'
 
 // 将扁平数组转换为树
 const flat = [
@@ -77,12 +77,12 @@ try {
 ### CommonJS
 
 ```js
-const { shuffle } = require('@supuwoerc/utils')
+const { shuffle } = require('@supuwoerc/toolkit')
 ```
 
 ## API 文档
 
-完整的 API 文档请访问 [https://supuwoerc.github.io/utils/](https://supuwoerc.github.io/utils/)。
+完整的 API 文档请访问 [https://supuwoerc.github.io/toolkit/](https://supuwoerc.github.io/toolkit/)。
 
 你也可以在本地生成文档：
 
@@ -102,8 +102,7 @@ pnpm run doc
 ### 设置
 
 ```bash
-git clone https://github.com/supuwoerc/utils.git
-cd utils
+git clone https://github.com/supuwoerc/toolkit.git
 pnpm install
 ```
 
