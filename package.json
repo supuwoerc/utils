@@ -1,7 +1,7 @@
 {
   "name": "@supuwoerc/utils",
   "type": "module",
-  "version": "1.0.0-beta.9",
+  "version": "1.0.0",
   "description": "a collection of utility functions for JavaScript/TypeScript",
   "author": {
     "name": "Idris",
