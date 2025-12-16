@@ -112,6 +112,28 @@ export class DoublyLinkedList<V> {
   }
 
   /**
+   * 检查节点是否属于当前链表（私有方法）
+   * Check if a node belongs to the current list (private method)
+   *
+   * @param node 要检查的节点 / The node to check
+   * @returns 如果节点属于当前链表返回 true，否则返回 false / Returns true if the node belongs to the current list, false otherwise
+   *
+   * @remarks
+   * 通过遍历链表来验证节点的所有权
+   * Validates node ownership by traversing the list
+   */
+  #isNodeInList(node: DoublyLinkedListNode<V>): boolean {
+    let current = this.#head
+    while (current) {
+      if (current === node) {
+        return true
+      }
+      current = current.next
+    }
+    return false
+  }
+
+  /**
    * 清空链表
    * Clear the list
    *
@@ -220,6 +242,9 @@ export class DoublyLinkedList<V> {
    * 当前链表实例，支持方法链式调用。
    */
   addToHead(node: DoublyLinkedListNode<V>) {
+    if (node.prev !== undefined || node.next !== undefined) {
+      throw new Error('node is already part of a list')
+    }
     if (this.isEmpty) {
       this.#head = node
       this.#tail = node
@@ -322,11 +347,14 @@ export class DoublyLinkedList<V> {
       return true
     }
     const node = new DoublyLinkedListNode(value)
-    const prev = this.#getNode(index - 1)!
-    node.next = prev!.next
+    const prev = this.#getNode(index - 1)
+    if (!prev?.next) {
+      return false
+    }
+    node.next = prev.next
     node.prev = prev
-    prev!.next!.prev = node
-    prev!.next = node
+    prev.next.prev = node
+    prev.next = node
     this.#size++
     return true
   }
@@ -339,7 +367,7 @@ export class DoublyLinkedList<V> {
    * @returns 如果节点被找到并移除返回 true，否则返回 false / True if the node was found and removed, false otherwise
    */
   removeNode(node: DoublyLinkedListNode<V>): boolean {
-    if (!node || this.isEmpty) {
+    if (!node || this.isEmpty || !this.#isNodeInList(node)) {
       return false
     }
     if (node.prev) {

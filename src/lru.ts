@@ -223,8 +223,11 @@ export class LRUCache<K extends keyof any, V> {
   delete(key: K): boolean {
     if (this.has(key)) {
       const node = this.#cache[key]
-      delete this.#cache[key]
-      return this.#doublyLinkedList.removeNode(node)
+      const removed = this.#doublyLinkedList.removeNode(node)
+      if (removed) {
+        delete this.#cache[key]
+      }
+      return removed
     }
     return false
   }
@@ -414,8 +417,9 @@ export class LRUCacheWithTTL<K extends keyof any, V> {
    */
   cleanupExpired(): number {
     let deletedCount = 0
-    for (const k in this.#cache) {
-      if (this.#cache[k].value.isExpired()) {
+    const keys = Object.keys(this.#cache) as K[]
+    for (const k of keys) {
+      if (this.#cache[k]?.value.isExpired()) {
         this.#doublyLinkedList.removeNode(this.#cache[k])
         delete this.#cache[k]
         deletedCount++
@@ -464,8 +468,11 @@ export class LRUCacheWithTTL<K extends keyof any, V> {
   delete(key: K): boolean {
     if (this.has(key)) {
       const node = this.#cache[key]
-      delete this.#cache[key]
-      return this.#doublyLinkedList.removeNode(node)
+      const removed = this.#doublyLinkedList.removeNode(node)
+      if (removed) {
+        delete this.#cache[key]
+      }
+      return removed
     }
     return false
   }
