@@ -1,5 +1,13 @@
 # Changelog
 
+# [1.0.0](/compare/v1.0.0-beta.8...v1.0.0) (2025-12-16)
+
+
+### Features
+
+* add lfu cache & tests & strengthen linked list & docs 78d6042
+* add lfu cache implementation and improve comments for doubly linked list and lru f96c7e7
+
 # [1.0.0](/compare/v1.0.0-beta.7...v1.0.0) (2025-12-14)
 
 
